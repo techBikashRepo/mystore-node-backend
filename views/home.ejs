@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <!-- Option 1: Include in HTML -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" href="../css/home.css" />
+    <title>Home</title>
+  </head>
+  <body>
+    <%- include('./includes/navbar.ejs'), {isLoggedIn:isLoggedIn} %>
+    <div>
+      <div class="pt-3 card-container">
+        <% if(products.length > 0) { %> <% for(let product of products){ %>
+        <div class="card -m3 custom-card">
+          <img src=<%=`../assets/${product.img}` %> class="card-img-top
+          card-image" alt=<%=product.productname %>/>
+          <div class="card-body">
+            <div class="name-price-container">
+              <h4 class="card-title"><%= product.productname %></h4>
+              <h5 class="card-title fw-light"><%= product.price %></h5>
+            </div>
+          </div>
+          <% if(isLoggedIn ==='true') { %>
+          <div>
+            <a
+              href="/edit-product/<%=product.id %>"
+              class="btn btn-outline-dark mx-1 mt-4 mb-1 edit-buttons"
+            >
+              <i class="bi bi-pencil-fill"></i>
+            </a>
+            <a
+              href="/delete-product/<%=product.id %>"
+              class="btn btn-outline-dark mx-1 mt-4 mb-1 edit-buttons"
+            >
+              <i class="bi bi-trash-fill"></i>
+            </a>
+          </div>
+          <% } %>
+        </div>
+        <% } %> <% } else { %>
+        <div class="m-5 p-5">
+          <h1>No Products Available</h1>
+          <a href="/add-product" class="btn btn-outline-dark fs-4 my-3"
+            >Add Product</a
+          >
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </body>
+</html>
