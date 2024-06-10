@@ -2,10 +2,13 @@ const express = require("express");
 const app = express();
 const session = require("express-session");
 const MysqlStore = require("express-mysql-session")(session);
+const multer = require("multer");
 const JWT = require("jsonwebtoken");
+const path = require("path");
 const PORT = 5000;
 const cookieParser = require("cookie-parser");
 const bcrypt = require("bcrypt");
+const fs = require("fs-extra");
 
 const chalk = require("chalk");
 const home = require("./routes/home");
@@ -39,6 +42,17 @@ app.use(
     store: sessionStore,
   })
 );
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./images/");
+  },
+  filename: (req, file, cb) => {
+    const timestamp = new Date().toISOString().replace(/:/g, "-");
+    cb(null, `${timestamp}-${file.originalname}`);
+  },
+});
+app.use(multer({ storage: storage }).single("img"));
 
 app.get("/tryBcrypt", async (req, res) => {
   const password = "password";

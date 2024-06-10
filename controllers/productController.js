@@ -37,8 +37,10 @@ exports.renderAddProduct = (req, res) => {
 };
 
 exports.postAddProduct = (req, res) => {
-  const { productname, price, img } = req.body;
+  const { productname, price } = req.body;
+  const img = req.file.destination + req.file.filename;
   const products = new Products(null, productname, price, img);
+  console.log(req.file);
   products.postData().then(() => {
     res.redirect("/");
   });
