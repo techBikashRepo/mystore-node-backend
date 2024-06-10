@@ -57,7 +57,6 @@ app.use(multer({ storage: storage }).single("img"));
 app.get("/tryBcrypt", async (req, res) => {
   const password = "password";
   const hashedPassword = bcrypt.hashSync(password, 10);
-  console.log(bcrypt.compareSync(password, hashedPassword));
   res.send(hashedPassword);
 });
 
