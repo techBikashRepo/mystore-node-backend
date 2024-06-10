@@ -27,16 +27,13 @@ const Products = require("../models/products");
 //   },
 // ];
 exports.renderProducts = (req, res) => {
-  const cookie = req.session.isLoggedIn;
-
   Products.fetchProducts().then(([rows, fieldData]) => {
-    res.render("home", { products: rows, isLoggedIn: cookie });
+    res.render("home", { products: rows, isLoggedIn: global.isLoggedIn });
   });
 };
 
 exports.renderAddProduct = (req, res) => {
-  const cookie = req.session.isLoggedIn;
-  res.render("add-product", { isLoggedIn: cookie });
+  res.render("add-product", { isLoggedIn: global.isLoggedIn });
 };
 
 exports.postAddProduct = (req, res) => {
@@ -48,10 +45,12 @@ exports.postAddProduct = (req, res) => {
 };
 
 exports.renderEditProduct = (req, res) => {
-  const cookie = req.session.isLoggedIn;
   Products.fetchProductById(req.params.id).then(
     ([[productData], fieldData]) => {
-      res.render("edit-product", { product: productData, isLoggedIn: cookie });
+      res.render("edit-product", {
+        product: productData,
+        isLoggedIn: global.isLoggedIn,
+      });
     }
   );
 };

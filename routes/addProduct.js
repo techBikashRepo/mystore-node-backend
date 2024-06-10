@@ -1,4 +1,5 @@
 const express = require("express");
+const { auth } = require("../middlewares/auth");
 const {
   renderAddProduct,
   postAddProduct,
@@ -9,7 +10,7 @@ const router = express.Router();
 
 router.use(bodyParser.urlencoded({ extended: true }));
 
-router.get("/", renderAddProduct);
-router.post("/", postAddProduct);
+router.get("/", auth, renderAddProduct);
+router.post("/", auth, postAddProduct);
 
 module.exports = router;

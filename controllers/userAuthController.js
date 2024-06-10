@@ -1,13 +1,17 @@
 const Users = require("../models/users");
+const JWT = require("jsonwebtoken");
+const { tokenSignature } = require("../utils/globals");
+const bcrypt = require("bcrypt");
 
 exports.renderSignUp = (req, res) => {
   const cookie = req.session.isLoggedIn;
   res.render("sign-up", { isLoggedIn: cookie });
 };
 
-exports.registerUser = (req, res) => {
+exports.registerUser = async (req, res) => {
   const { username, password, confirmpassword } = req.body;
-  const users = new Users(null, username, password);
+  const hashedPassword = bcrypt.hashSync(password, 10);
+  const users = new Users(null, username, hashedPassword);
 
   users.insertUser().then(() => {
     res.redirect("/");
@@ -23,16 +27,16 @@ exports.validateLogin = (req, res) => {
   const { username, password } = req.body;
 
   Users.fetchUserByUsername(username).then(([[userCredential], tableInfo]) => {
+    const token = JWT.sign({ username }, tokenSignature);
     if (userCredential) {
-      if (userCredential.password === password) {
-        req.session.isLoggedIn = "true";
+      const isMatch = bcrypt.compare(userCredential.password, password);
+      if (isMatch) {
+        req.session.token = token;
         res.redirect("/");
       } else {
-        req.session.isLoggedIn = "invalidPassword";
         res.redirect("/login");
       }
     } else {
-      req.session.isLoggedIn = "invalidUsername";
       res.redirect("/login");
     }
   });

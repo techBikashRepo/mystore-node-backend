@@ -4,6 +4,8 @@ const session = require("express-session");
 const MysqlStore = require("express-mysql-session")(session);
 const JWT = require("jsonwebtoken");
 const PORT = 5000;
+const cookieParser = require("cookie-parser");
+const bcrypt = require("bcrypt");
 
 const chalk = require("chalk");
 const home = require("./routes/home");
@@ -12,6 +14,11 @@ const editProduct = require("./routes/editProduct");
 const deleteProduct = require("./routes/deleteProduct");
 const tryCookie = require("./routes/tryCookie");
 const userAuth = require("./routes/userAuth");
+const { tokenSignature } = require("./utils/globals");
+
+app.set("view engine", "ejs");
+app.set("views", "views");
+app.use(express.static(__dirname));
 
 const options = {
   connectionLimit: 10,
@@ -23,27 +30,22 @@ const options = {
   createDatabaseTable: true,
 };
 const sessionStore = new MysqlStore(options);
-
-app.set("view engine", "ejs");
-app.set("views", "views");
-app.use(express.static(__dirname));
-
+app.use(cookieParser());
 app.use(
   session({
-    secret: "It is a secret key",
+    secret: tokenSignature,
     resave: false,
     saveUninitialized: false,
     store: sessionStore,
   })
 );
 
-app.get("/tryJWT", (req, res) => {
-  const token = JWT.sign({ isLoggedIn: true }, "It is a Secret");
-  res.cookie("token", token);
-  res.send(token);
+app.get("/tryBcrypt", async (req, res) => {
+  const password = "password";
+  const hashedPassword = bcrypt.hashSync(password, 10);
+  console.log(bcrypt.compareSync(password, hashedPassword));
+  res.send(hashedPassword);
 });
-
-app.get("/verifyJWT", (req, res) => {});
 
 app.use("/", home);
 app.use("/add-product", addProduct);
