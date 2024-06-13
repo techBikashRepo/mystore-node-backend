@@ -3,6 +3,7 @@ const app = express();
 const session = require("express-session");
 const MysqlStore = require("express-mysql-session")(session);
 const multer = require("multer");
+const sequelize = require("./utils/database.js");
 const JWT = require("jsonwebtoken");
 const path = require("path");
 const PORT = 5000;
@@ -66,6 +67,15 @@ app.use("/edit-product", editProduct);
 app.use("/delete-product", deleteProduct);
 app.use("/", userAuth);
 app.use("/tryCookie", tryCookie);
+
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log("Database conneted...");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 const server = app.listen(PORT, () => {
   console.log(chalk.bgMagentaBright.bold(`Server Is Running At PORT ${PORT}`));
