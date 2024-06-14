@@ -1,21 +1,26 @@
-const Users = require("../models/users");
 const JWT = require("jsonwebtoken");
 const { tokenSignature } = require("../utils/globals");
 const bcrypt = require("bcrypt");
+const Users = require("../models/users");
 
 exports.renderSignUp = (req, res) => {
-  const cookie = req.session.isLoggedIn;
-  res.render("sign-up", { isLoggedIn: cookie });
+  res.render("sign-up", { isLoggedIn: global.isLoggedIn });
 };
 
 exports.registerUser = async (req, res) => {
   const { username, password, confirmpassword } = req.body;
-  const hashedPassword = bcrypt.hashSync(password, 10);
-  const users = new Users(null, username, hashedPassword);
 
-  users.insertUser().then(() => {
+  try {
+    const hashedPassword = await bcrypt.hashSync(password, 10);
+    await Users.insertUser({
+      username,
+      password: hashedPassword,
+    });
     res.redirect("/");
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).redirect("/error");
+  }
 };
 
 exports.renderLogin = (req, res) => {
@@ -26,11 +31,12 @@ exports.renderLogin = (req, res) => {
 exports.validateLogin = (req, res) => {
   const { username, password } = req.body;
 
-  Users.fetchUserByUsername(username).then(([[userCredential], tableInfo]) => {
-    const token = JWT.sign({ username }, tokenSignature);
-    if (userCredential) {
-      const isMatch = bcrypt.compare(userCredential.password, password);
+  Users.fetchUserByUsername(username).then((userCredentials) => {
+    if (userCredentials) {
+      const isMatch = bcrypt.compare(password, userCredentials.password);
+
       if (isMatch) {
+        const token = JWT.sign({ username }, tokenSignature);
         req.session.token = token;
         res.redirect("/");
       } else {

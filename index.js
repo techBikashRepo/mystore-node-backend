@@ -1,15 +1,13 @@
 const express = require("express");
 const app = express();
 const session = require("express-session");
-const MysqlStore = require("express-mysql-session")(session);
+// const MysqlStore = require("express-mysql-session")(session);
+const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const multer = require("multer");
 const sequelize = require("./utils/database.js");
-const JWT = require("jsonwebtoken");
-const path = require("path");
 const PORT = 5000;
 const cookieParser = require("cookie-parser");
 const bcrypt = require("bcrypt");
-const fs = require("fs-extra");
 
 const chalk = require("chalk");
 const home = require("./routes/home");
@@ -24,16 +22,11 @@ app.set("view engine", "ejs");
 app.set("views", "views");
 app.use(express.static(__dirname));
 
-const options = {
-  connectionLimit: 10,
-  port: 3306,
-  host: "localhost",
-  database: "mystore",
-  user: "root",
-  password: "admin",
-  createDatabaseTable: true,
-};
-const sessionStore = new MysqlStore(options);
+const sessionStore = new SequelizeStore({
+  db: sequelize,
+});
+sessionStore.sync();
+
 app.use(cookieParser());
 app.use(
   session({
