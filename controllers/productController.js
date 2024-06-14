@@ -1,4 +1,4 @@
-const Products = require("../models/products");
+const Product = require("../models/products");
 
 // const products = [
 //   {
@@ -26,34 +26,54 @@ const Products = require("../models/products");
 //     img: "pineapple.jpg",
 //   },
 // ];
-exports.renderProducts = (req, res) => {
-  Products.fetchProducts().then(([rows, fieldData]) => {
-    res.render("home", { products: rows, isLoggedIn: global.isLoggedIn });
-  });
+exports.renderProducts = async (req, res) => {
+  try {
+    const products = await Product.findAll();
+    console.log("Products: ", products);
+    res.render("home", { products: products, isLoggedIn: global.isLoggedIn });
+  } catch (err) {
+    console.error(err);
+    res.status(500).redirect("/error");
+  }
 };
 
 exports.renderAddProduct = (req, res) => {
   res.render("add-product", { isLoggedIn: global.isLoggedIn });
 };
 
-exports.postAddProduct = (req, res) => {
-  const { productname, price } = req.body;
-  const img = req.file.destination + "/" + req.file.filename;
-  const products = new Products(null, productname, price, img);
-  products.postData().then(() => {
+exports.postAddProduct = async (req, res) => {
+  try {
+    const { productname, price } = req.body;
+    const img = req.file.destination + "/" + req.file.filename;
+
+    const newProduct = await Product.create({
+      productname,
+      price,
+      img,
+    });
+    console.log("Products Added : ", newProduct);
     res.redirect("/");
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).redirect("/error");
+  }
 };
 
-exports.renderEditProduct = (req, res) => {
-  Products.fetchProductById(req.params.id).then(
-    ([[productData], fieldData]) => {
+exports.renderEditProduct = async (req, res) => {
+  try {
+    const product = await Product.findByPk(req.params.id);
+    if (product) {
       res.render("edit-product", {
-        product: productData,
+        product: product,
         isLoggedIn: global.isLoggedIn,
       });
+    } else {
+      res.redirect("/");
     }
-  );
+  } catch (err) {
+    console.error(err);
+    res.status(500).redirect("/error");
+  }
 };
 
 exports.editProduct = (req, res) => {

@@ -77,6 +77,10 @@ sequelize
     console.log(err);
   });
 
-const server = app.listen(PORT, () => {
-  console.log(chalk.bgMagentaBright.bold(`Server Is Running At PORT ${PORT}`));
+sequelize.sync().then(() => {
+  app.listen(PORT, () => {
+    console.log(
+      chalk.bgMagentaBright.bold(`Server Is Running At PORT ${PORT}`)
+    );
+  });
 });
