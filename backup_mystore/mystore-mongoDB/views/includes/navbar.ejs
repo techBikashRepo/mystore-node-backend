@@ -1,0 +1,31 @@
+<nav class="navbar navbar-expand-lg bg-dark">
+  <div class="container-fluid">
+    <div class="collapse navbar-collapse d-flex justify-content-between">
+      <ul class="navbar-nav">
+        <li class="navbar-item">
+          <a class="nav-link text-light fs-5 px-3" href="/">Home</a>
+        </li>
+        <% if(isLoggedIn ==='true') { %>
+        <li class="navbar-item">
+          <a class="nav-link text-light fs-5 px-3" href="/add-product">Add Product</a>
+        </li>
+        <% } %>
+
+      </ul>
+      <ul class="navbar-nav">
+        <% if(isLoggedIn ==='true') { %>
+        <li class="nav-item">
+          <a class="nav-link text-light fs-5 px-3" href="/logout">Logout</a>
+        </li>
+        <% } else { %>
+        <li class="nav-item">
+          <a class="nav-link text-light fs-5 px-3" href="/sign-up">Sign Up</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-light fs-5 px-3" href="/login">Login</a>
+        </li>
+        <% }  %>
+      </ul>
+    </div>
+  </div>
+</nav>

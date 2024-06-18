@@ -1,0 +1,23 @@
+.custom-card {
+  width: 16rem;
+}
+
+.card-container {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.custom-card .card-image {
+  height: 17rem;
+}
+
+.name-price-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.edit-buttons {
+  width: 45%;
+}
