@@ -1,5 +1,5 @@
 const JWT = require("jsonwebtoken");
-const { tokenSignature } = require("../utils/globals");
+const { tokenSignature } = require("../utils/globals.js");
 
 global.isLoggedIn = "init";
 

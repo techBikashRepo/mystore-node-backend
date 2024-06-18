@@ -1,7 +1,7 @@
 const JWT = require("jsonwebtoken");
 const { tokenSignature } = require("../utils/globals.js");
 const bcrypt = require("bcrypt");
-const User = require("../models/User.js");
+const User = require("../models/users.js");
 
 exports.renderSignUp = (req, res) => {
   res.render("sign-up", { isLoggedIn: global.isLoggedIn });

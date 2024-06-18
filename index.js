@@ -1,23 +1,22 @@
 const express = require("express");
 const app = express();
 const session = require("express-session");
-// const MysqlStore = require("express-mysql-session")(session);
-const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const multer = require("multer");
 const mongoose = require("mongoose");
-const sequelize = require("./utils/database.js");
+const MongoStore = require("connect-mongo");
+
 const PORT = 5000;
 const cookieParser = require("cookie-parser");
 const bcrypt = require("bcrypt");
 
 const chalk = require("chalk");
-const home = require("./routes/home");
-const addProduct = require("./routes/addProduct");
-const editProduct = require("./routes/editProduct");
-const deleteProduct = require("./routes/deleteProduct");
-const tryCookie = require("./routes/tryCookie");
-const userAuth = require("./routes/userAuth");
-const { tokenSignature } = require("./utils/globals");
+const home = require("./routes/home.js");
+const addProduct = require("./routes/addProduct.js");
+const editProduct = require("./routes/editProduct.js");
+const deleteProduct = require("./routes/deleteProduct.js");
+const tryCookie = require("./routes/tryCookie.js");
+const userAuth = require("./routes/userAuth.js");
+const { tokenSignature } = require("./utils/globals.js");
 
 const dbString = "mongodb://localhost:27017/mystore";
 
@@ -34,18 +33,16 @@ app.set("view engine", "ejs");
 app.set("views", "views");
 app.use(express.static(__dirname));
 
-const sessionStore = new SequelizeStore({
-  db: sequelize,
-});
-sessionStore.sync();
-
 app.use(cookieParser());
 app.use(
   session({
     secret: tokenSignature,
     resave: false,
     saveUninitialized: false,
-    store: sessionStore,
+    store: MongoStore.create({
+      mongooseConnection: mongoose.connection,
+      mongoUrl: dbString,
+    }),
   })
 );
 
@@ -73,19 +70,6 @@ app.use("/delete-product", deleteProduct);
 app.use("/", userAuth);
 app.use("/tryCookie", tryCookie);
 
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log("Database conneted...");
-  })
-  .catch((err) => {
-    console.log(err);
-  });
-
-sequelize.sync().then(() => {
-  app.listen(PORT, () => {
-    console.log(
-      chalk.bgMagentaBright.bold(`Server Is Running At PORT ${PORT}`)
-    );
-  });
+app.listen(PORT, () => {
+  console.log(chalk.bgMagentaBright.bold(`Server Is Running At PORT ${PORT}`));
 });
