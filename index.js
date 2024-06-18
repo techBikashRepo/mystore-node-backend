@@ -4,6 +4,7 @@ const session = require("express-session");
 // const MysqlStore = require("express-mysql-session")(session);
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const multer = require("multer");
+const mongoose = require("mongoose");
 const sequelize = require("./utils/database.js");
 const PORT = 5000;
 const cookieParser = require("cookie-parser");
@@ -17,6 +18,17 @@ const deleteProduct = require("./routes/deleteProduct");
 const tryCookie = require("./routes/tryCookie");
 const userAuth = require("./routes/userAuth");
 const { tokenSignature } = require("./utils/globals");
+
+const dbString = "mongodb://localhost:27017/mystore";
+
+mongoose
+  .connect(dbString)
+  .then(() => {
+    console.log("MongoDB Connected...");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 app.set("view engine", "ejs");
 app.set("views", "views");
